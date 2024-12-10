@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间线回忆相册</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="current-time" id="currentTime">
+                <i class="time-icon">🕐</i>
+                <span id="dateTime"></span>
+                <i class="time-icon">🕐</i>
+            </div>
+        </div>
+    </nav>
+
+    <div class="timeline-container">
+        <div class="timeline">
+            <div class="timeline-item" data-image="images/1.jpeg">
+                <div class="timeline-content">
+                    <h3>初次相遇</h3>
+                    <p>那是春天最美好的时节，樱花纷飞的季节。细雨绵绵中，我们在这片粉色的海洋中邂逅，空气中弥漫着淡淡的花香，仿佛连时间都在这一刻停驻。</p>
+                    <div class="timeline-thumbnail">
+                        <img src="images/1.jpeg" alt="初次相遇" class="preview-trigger">
+                    </div>
+                    <p>你撑着一把透明的雨伞，笑容如同樱花般绽放。那一刻，我知道这将是一段难忘的故事的开始...</p>
+                </div>
+                <div class="decorative-card">
+                    <div class="decorative-text">
+                        "在樱花纷飞的季节遇见你，<br>
+                        是上天赐予我最美的礼物。<br>
+                        你的笑容比樱花更加绚烂，<br>
+                        让我的世界从此充满色彩。"
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-image="images/2.jpeg">
+                <div class="timeline-content">
+                    <h3>夏日海滩</h3>
+                    <p>炎炎夏日，我们逃离了城市的喧嚣，来到这片蔚蓝的海岸。阳光洒在光粼粼的海面上，折射出无数璀璨的光点。</p>
+                    <div class="timeline-thumbnail">
+                        <img src="images/2.jpeg" alt="夏日海滩" class="preview-trigger">
+                    </div>
+                    <p>海风轻抚着我们的脸庞，带着咸咸的味道。你在沙滩上奔跑的身影，成为这个夏天最美的画面。我们一起堆沙堡、捡贝��，享受着属于我们的完美假期...</p>
+                </div>
+                <div class="decorative-card">
+                    <div class="decorative-text">
+                        "海风轻抚过的每一刻，<br>
+                        都记录着我们的欢笑。<br>
+                        愿时光永远停留在，<br>
+                        这片属于我们的蔚蓝海岸。"
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-image="images/3.jpeg">
+                <div class="timeline-content">
+                    <h3>秋日野餐</h3>
+                    <p>金秋十月，层林尽染。我们带着精心准备的野餐篮，寻找着属于我们的秘密基地。枫叶随风飘落，为这个完美的下午增添了一抹绚丽的色彩。</p>
+                    <div class="timeline-thumbnail">
+                        <img src="images/3.jpeg" alt="秋日野餐" class="preview-trigger">
+                    </div>
+                    <p>野餐毯上摆满了美食，三明治、水果、还有你亲手烤的小饼干。阳光透过树叶的缝隙洒在草地上，斑驳的光影中，时光仿佛静止在这温馨的瞬间...</p>
+                </div>
+                <div class="decorative-card">
+                    <div class="decorative-text">
+                        "金色的阳光洒在你的发梢，<br>
+                        秋风送来阵阵芬芳。<br>
+                        与你分享的每一刻，<br>
+                        都是生命中最甜美的时光。"
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-image="images/4.jpeg">
+                <div class="timeline-content">
+                    <h3>冬季温暖</h3>
+                    <p>窗是纷纷扬扬的大雪，整个城市披上了一层银装。我们窝在温暖的屋子里，炉火将房间映照得一片温馨。</p>
+                    <div class="timeline-thumbnail">
+                        <img src="images/4.jpeg" alt="冬季温暖" class="preview-trigger">
+                    </div>
+                    <p>你泡的热巧克力香甜可口，棉花糖在杯中慢慢融化。我们依偎在一起，分享着彼此的体温，聊着过去的点点滴滴，憧憬着未来的种种可能...</p>
+                </div>
+                <div class="decorative-card">
+                    <div class="decorative-text">
+                        "窗外飘雪纷纷，<br>
+                        心却被你的温暖填满。<br>
+                        愿我们的爱如炉火般，<br>
+                        永远温暖彼此的心房。"
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-image="images/5.jpeg">
+                <div class="timeline-content">
+                    <h3>旅行时光</h3>
+                    <p>背起行囊，踏上未知的旅程。每一个陌生的城市都是我们共同探索的新天地。清晨的阳光洒在古老的街道上，我们漫步其中，感受着不同的文化气息。</p>
+                    <div class="timeline-thumbnail">
+                        <img src="images/5.jpeg" alt="旅行时光" class="preview-trigger">
+                    </div>
+                    <p>在异国的街角咖啡馆，品尝当地的特色美食，记录下每一个精彩瞬间。你说，旅行的意义就是与心爱的人一起创造独特的回忆...</p>
+                </div>
+                <div class="decorative-card">
+                    <div class="decorative-text">
+                        "每一段旅程都是故事，<br>
+                        每一个瞬间都是永恒。<br>
+                        有你相伴的旅途，<br>
+                        处处都是风景。"
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-image="images/6.jpeg">
+                <div class="timeline-content">
+                    <h3>生日惊喜</h3>
+                    <p>这是一个精心策划的惊喜。当你开门的那一刻，映入眼帘的是满屋的气球和装饰，每一个细节都倾注了我的心意。</p>
+                    <div class="timeline-thumbnail">
+                        <img src="images/6.jpeg" alt="生日惊喜" class="preview-trigger">
+                    </div>
+                    <p>蛋糕上的蜡烛映照着你惊喜的笑容，朋友们的祝福声此起彼伏。这一刻的快乐，将永远珍藏在我们的记忆中...</p>
+                </div>
+                <div class="decorative-card">
+                    <div class="decorative-text">
+                        "点亮蜡烛的瞬间，<br>
+                        照亮了你惊喜的笑脸。<br>
+                        愿你的每一个愿望，<br>
+                        都能如星光般闪耀。"
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-image="images/7.jpeg">
+                <div class="timeline-content">
+                    <h3>音乐节</h3>
+                    <p>夏夜的露天音乐节，星空下的激情律动。震撼的音乐声中，我们随着节奏摇摆，忘记了所���的烦恼。</p>
+                    <div class="timeline-thumbnail">
+                        <img src="images/7.jpeg" alt="音乐节" class="preview-trigger">
+                    </div>
+                    <p>舞台上的灯光绚丽多彩，照亮了夜空。在音乐的海洋里，们肆意舞动，享受着青春的活力。这是属于我们的狂欢时刻...</p>
+                </div>
+                <div class="decorative-card">
+                    <div class="decorative-text">
+                        "在音乐的海洋里，<br>
+                        与你一起舞动青春。<br>
+                        每一个音符都是快乐，<br>
+                        每一刻都值得铭记。"
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-image="images/8.jpeg">
+                <div class="timeline-content">
+                    <h3>毕业季</h3>
+                    <p>身着学士服，站在校园的每个角落拍照留念。四年的大学时光，在这一刻画上了圆满的句点。</p>
+                    <div class="timeline-thumbnail">
+                        <img src="images/8.jpeg" alt="毕业季" class="preview-trigger">
+                    </div>
+                    <p>和同学们依依惜别，回忆着一起奋���的点点滴滴。未来的道路虽然未知，但我知道有你在身边，一切都充满了可能...</p>
+                </div>
+                <div class="decorative-card">
+                    <div class="decorative-text">
+                        "青春的篇章即将翻页，<br>
+                        但我们的故事永不完结。<br>
+                        带着梦想起航，<br>
+                        未来的路有你相伴。"
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-image="images/9.jpeg">
+                <div class="timeline-content">
+                    <h3>新的开始</h3>
+                    <p>站在人生的新起点，我们憧憬着更多的可能。过去的每一个瞬间都是珍贵的回忆，未来的每一步都充满期待。</p>
+                    <div class="timeline-thumbnail">
+                        <img src="images/9.jpeg" alt="新的开始" class="preview-trigger">
+                    </div>
+                    <p>牵着你的手，我们一起描绘未来的蓝图。无论前方有什么挑战，只要我们携手同行，就一定能创造更多美好的故事...</p>
+                </div>
+                <div class="decorative-card">
+                    <div class="decorative-text">
+                        "站在新的起点，<br>
+                        回望走过的路。<br>
+                        有你在的每一步，<br>
+                        都是最美的风景。"
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="image-preview" id="imagePreview">
+        <span class="close-btn">&times;</span>
+        <img src="" alt="回忆照片" id="previewImage">
+    </div>
+
+    <div class="footer-decoration">
+        <div class="footer-content">
+            <div class="music-player">
+                <h3>背景音乐</h3>
+                <audio id="bgMusic" preload="auto">
+                    <source src="music/background.mp3" type="audio/mpeg">
+                    您的浏览器不支持音频播放。
+                </audio>
+                <div class="music-controls">
+                    <button id="playPauseBtn" class="music-btn">
+                        <i class="play-icon">▶</i>
+                    </button>
+                    <div class="music-info">
+                        <span class="song-title">温柔的记忆</span>
+                        <div class="progress-bar">
+                            <div class="progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-text">
+                <p class="quote">" 时光易逝，回忆永恒。<br>愿这些美好的瞬间，永远珍藏在我们的记忆里。"</p>
+            </div>
+            <div class="decoration-elements">
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="copyright-notice">
+        本网页由大学生个人喜欢特意制作，如有侵权，请联系删除。邮箱：2830438708@qq.com   Tel：15617351816
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
