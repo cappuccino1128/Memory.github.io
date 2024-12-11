@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleImageClick(e) {
         e.preventDefault();
         const timelineItem = this.closest('.timeline-item');
-        const imagePath = timelineItem.dataset.image;
+        const imagePath = this.getAttribute('src');
         showImage(imagePath);
     }
 
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(error => {
                     console.log('需要用户交互才能播放:', error);
-                    // 添加一次性点击事件来启动播放
+                    // 添加一次性点击事���来启动播放
                     const startAudio = () => {
                         audio.play()
                             .then(() => {

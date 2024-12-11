@@ -144,6 +144,10 @@ body {
     object-position: top center;
 }
 
+.image-preview.show {
+    opacity: 1;
+}
+
 .close-btn {
     position: absolute;
     top: 20px;
