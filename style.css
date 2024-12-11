@@ -42,10 +42,9 @@ body {
     width: 45%;
     padding: 30px 40px;
     position: relative;
-    opacity: 0;
+    visibility: hidden;
     transform: translateX(-100px);
-    animation: slide-in 0.6s ease forwards;
-    perspective: 1000px;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 时间点圆圈装饰 */
@@ -85,9 +84,12 @@ body {
     padding: 35px;
     border-radius: 15px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    transition: all 0.6s ease;
     position: relative;
     min-height: 600px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity, transform;
 }
 
 .timeline-content:hover {
@@ -116,7 +118,7 @@ body {
     display: none;
 }
 
-/* 图片预览样式 */
+/* 图片预览样式优化 */
 .image-preview {
     display: none;
     position: fixed;
@@ -124,50 +126,172 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.95);
+    background: rgba(0, 0, 0, 0.92);
     z-index: 1000;
-    backdrop-filter: blur(5px);
-}
-
-.image-preview img {
-    max-width: 95%;
-    max-height: 95%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    backdrop-filter: blur(10px);
     opacity: 0;
-    transition: opacity 0.5s ease;
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(255,255,255,0.1);
-    object-fit: contain;
-    object-position: top center;
+    transition: opacity 0.3s ease;
 }
 
 .image-preview.show {
     opacity: 1;
 }
 
-.close-btn {
+.image-preview img {
+    max-width: 90%;
+    max-height: 90vh;
     position: absolute;
-    top: 20px;
-    right: 30px;
-    color: white;
-    font-size: 35px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-    width: 40px;
-    height: 40px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+    object-fit: contain;
+}
+
+.image-preview.show img {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* 关闭按钮样式优化 */
+.close-btn {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.1);
+    cursor: pointer;
+    z-index: 1010;
+    opacity: 0;
+    transform: scale(0.8) rotate(-180deg);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.close-btn:hover {
-    transform: rotate(90deg);
-    background: rgba(255,255,255,0.2);
+/* 关闭按钮的两条线 */
+.close-btn::before,
+.close-btn::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 2px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.close-btn::before {
+    transform: rotate(45deg);
+}
+
+.close-btn::after {
+    transform: rotate(-45deg);
+}
+
+/* 关闭按钮的圆形背景 */
+.close-btn-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transform: scale(0.9);
+    transition: all 0.3s ease;
+}
+
+/* 显示状态 */
+.image-preview.show .close-btn {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    transition-delay: 0.2s;
+}
+
+/* 悬停效果 */
+.close-btn:hover .close-btn-bg {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.close-btn:hover::before {
+    transform: rotate(135deg);
+    background: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.close-btn:hover::after {
+    transform: rotate(-135deg);
+    background: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* 点击效果 */
+.close-btn:active .close-btn-bg {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.close-btn:active::before,
+.close-btn:active::after {
+    width: 28px;
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+    .close-btn {
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .close-btn::before,
+    .close-btn::after {
+        width: 25px;
+    }
+}
+
+/* 加载状态样式 */
+.image-preview.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+    .image-preview img {
+        max-width: 95%;
+        max-height: 80vh;
+    }
+
+    .close-btn {
+        top: 15px;
+        right: 15px;
+        width: 35px;
+        height: 35px;
+        font-size: 20px;
+    }
 }
 
 /* 动画效果 */
@@ -237,7 +361,9 @@ body {
     overflow: hidden;
     opacity: 0;
     transform: translateY(20px);
-    transition: all 0.6s ease;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0.1s;
+    will-change: opacity, transform;
     height: 600px;
 }
 
@@ -283,12 +409,13 @@ body {
 /* 缩略图动画 */
 .timeline-item.animate .timeline-thumbnail {
     opacity: 1;
-    transform: translateX(-50%) scale(1);
+    transform: translateY(0);
 }
 
 .timeline-item.fade-out .timeline-thumbnail {
     opacity: 0;
-    transform: translateX(-50%) scale(0.8);
+    transform: translateY(20px);
+    transition-delay: 0.4s;
 }
 
 /* 时间点圆圈的动画 */
@@ -372,13 +499,16 @@ body {
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     z-index: -1;
-    transition: all 0.6s ease;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0.2s;
+    will-change: opacity, transform;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     opacity: 0;
+    transform: translateX(-30px);
 }
 
 /* 左侧时间线项目的装饰卡片 */
@@ -426,14 +556,13 @@ body {
     text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
     opacity: 0;
     transform: translateY(20px);
-    transition: all 0.6s ease;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 动画效果 */
 .timeline-item.animate .decorative-card {
-    opacity: 1;
-    transform: translateX(0) rotate(0);
-    transition-delay: 0.2s;
+    opacity: 0.95;
+    transform: translateX(0);
 }
 
 /* 退出动画 */
@@ -447,7 +576,7 @@ body {
 .decorative-text {
     opacity: 0;
     transform: translateY(20px);
-    transition: all 0.6s ease;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .timeline-item.animate .decorative-text {
@@ -716,3 +845,167 @@ body {
         padding: 15px 0;
     }
 } 
+
+/* 修改动画效果 */
+.timeline-item {
+    visibility: hidden;
+    transform: translateX(-100px);
+}
+
+.timeline-content {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity, transform;
+}
+
+.decorative-card {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0.2s;
+    will-change: opacity, transform;
+}
+
+/* 动画状态 */
+.timeline-item.animate {
+    visibility: visible;
+    transform: translateX(0);
+}
+
+.timeline-item.animate .timeline-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline-item.animate .timeline-thumbnail {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline-item.animate .decorative-card {
+    opacity: 0.95;
+    transform: translateX(0);
+}
+
+/* 右侧项目的特殊处理 */
+.timeline-item:nth-child(even) {
+    margin-left: 55%;
+    transform: translateX(100px);
+}
+
+.timeline-item:nth-child(even) .timeline-content {
+    transform: translateY(20px);
+}
+
+.timeline-item:nth-child(even) .decorative-card {
+    transform: translateX(30px);
+}
+
+/* 右侧项目的动画状态 */
+.timeline-item:nth-child(even).animate .timeline-content {
+    transform: translateY(0);
+}
+
+.timeline-item:nth-child(even).animate .decorative-card {
+    transform: translateX(0);
+}
+
+/* 缩略图动画 */
+.timeline-thumbnail {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0.1s;
+    will-change: opacity, transform;
+}
+
+.timeline-item.animate .timeline-thumbnail {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 时间线项目的基础状态 */
+.timeline-item {
+    width: 45%;
+    padding: 30px 40px;
+    position: relative;
+    visibility: hidden;
+    transform: translateX(-100px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 右侧项目的基础状态 */
+.timeline-item:nth-child(even) {
+    margin-left: 55%;
+    transform: translateX(100px);
+}
+
+/* 内容卡片的基础状态 */
+.timeline-content {
+    background: white;
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    position: relative;
+    min-height: 600px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity, transform;
+}
+
+/* 装饰卡片的基础状态 */
+.decorative-card {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0.2s;
+    will-change: opacity, transform;
+}
+
+/* 缩略图的基础状态 */
+.timeline-thumbnail {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0.1s;
+    will-change: opacity, transform;
+}
+
+/* 动画状态 */
+.timeline-item.animate {
+    visibility: visible;
+    transform: translateX(0);
+}
+
+.timeline-item.animate .timeline-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline-item.animate .timeline-thumbnail {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline-item.animate .decorative-card {
+    opacity: 0.95;
+    transform: translateX(0);
+}
+
+/* 右侧项目的动画状态 */
+.timeline-item:nth-child(even).animate {
+    visibility: visible;
+    transform: translateX(0);
+}
+
+/* 退出动画状态 */
+.timeline-item.fade-out {
+    visibility: visible;
+    transition-delay: 0.4s;
+}
+
+.timeline-item:nth-child(even).fade-out {
+    transform: translateX(100px);
+}

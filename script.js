@@ -27,7 +27,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeTimeline() {
         // 设置时间线项目的动画延迟
         timelineItems.forEach((item, index) => {
-            item.style.animationDelay = `${index * 0.2}s`;
+            // 初始化时添加动画类
+            setTimeout(() => {
+                item.classList.add('animate');
+            }, index * 300); // 300ms的间隔
         });
 
         // 为所有预览图片添加点击事件
@@ -44,10 +47,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showImage(imagePath) {
-        // 显示预览容器和加载状态
+        // 显示预览容器
         imagePreview.style.display = 'block';
         imagePreview.classList.add('loading');
-        previewImage.style.opacity = '0';
+        
+        // 使用 RAF 确保过渡效果生效
+        requestAnimationFrame(() => {
+            imagePreview.classList.add('show');
+        });
 
         // 加载图片
         const img = new Image();
@@ -81,8 +88,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function closeImagePreview() {
-        previewImage.style.opacity = '0';
+        // 移除显示类
+        imagePreview.classList.remove('show');
         
+        // 等待过渡效果完成后隐藏容器
         setTimeout(() => {
             imagePreview.style.display = 'none';
             imagePreview.classList.remove('loading');
@@ -103,65 +112,71 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 修改 handleScroll 函数
+    // 修改滚动处理函数
     function handleScroll() {
-        timelineItems.forEach(item => {
+        const items = Array.from(timelineItems);
+        
+        items.forEach((item, index) => {
             const rect = item.getBoundingClientRect();
             const windowHeight = window.innerHeight;
             
-            // 调整显示和隐藏的阈值
+            // 调整显示阈值
             const showThreshold = windowHeight * 0.85;
-            const hideThreshold = windowHeight * 0.15;
+            const hideThreshold = windowHeight * 0.1;
             
-            // 计算元素位置
             const elementMiddle = rect.top + (rect.height / 2);
             const isVisible = elementMiddle < showThreshold && elementMiddle > hideThreshold;
             
             if (isVisible) {
-                if (!item.classList.contains('animate')) {
-                    item.classList.add('animate');
-                    item.classList.remove('fade-out');
-                    
-                    // 添加图片动画
-                    const thumbnail = item.querySelector('.timeline-thumbnail');
-                    if (thumbnail) {
+                // 如果上一个元素存在且正在显示，先让它淡出
+                if (index > 0) {
+                    const prevItem = items[index - 1];
+                    if (prevItem.classList.contains('animate')) {
+                        prevItem.classList.add('fade-out');
                         setTimeout(() => {
-                            thumbnail.style.opacity = '1';
-                            thumbnail.style.transform = 'translateY(0)';
-                        }, 300);
+                            prevItem.classList.remove('animate');
+                        }, 800); // 与CSS过渡时间匹配
                     }
                 }
-            } else {
-                if (item.classList.contains('animate')) {
-                    item.classList.remove('animate');
-                    item.classList.add('fade-out');
-                    
-                    // 重置图片状态
-                    const thumbnail = item.querySelector('.timeline-thumbnail');
-                    if (thumbnail) {
-                        thumbnail.style.opacity = '0';
-                        thumbnail.style.transform = 'translateY(20px)';
+                
+                // 显示当前元素
+                if (!item.classList.contains('animate')) {
+                    item.classList.remove('fade-out');
+                    item.classList.add('animate');
+                }
+            } else if (elementMiddle > showThreshold) {
+                // 如果元素在视口上方，保持初始状态
+                item.classList.remove('animate', 'fade-out');
+            } else if (elementMiddle < hideThreshold) {
+                // 如果元素在视口下方，确保下一个元素已经显示后再隐藏
+                const nextItem = items[index + 1];
+                if (!nextItem || nextItem.classList.contains('animate')) {
+                    if (item.classList.contains('animate')) {
+                        item.classList.add('fade-out');
+                        setTimeout(() => {
+                            item.classList.remove('animate');
+                        }, 800);
                     }
                 }
             }
         });
     }
 
-    // 优化滚动处理函数，使用 RAF 和防抖
+    // 优化防抖函数
     function debounceScroll(func, wait) {
         let timeout;
-        return function executedFunction() {
-            const later = () => {
-                clearTimeout(timeout);
-                func();
-            };
+        return function() {
+            const context = this;
+            const args = arguments;
             clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
+            timeout = setTimeout(() => {
+                func.apply(context, args);
+            }, wait);
         };
     }
 
-    // 使用优化后的滚动处理
-    const debouncedScroll = debounceScroll(handleScroll, 10);
+    // 使用 RAF 和防抖优化滚动处理
+    const debouncedScroll = debounceScroll(handleScroll, 16); // 约60fps
     window.addEventListener('scroll', () => {
         requestAnimationFrame(debouncedScroll);
     });
@@ -238,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(error => {
                     console.log('需要用户交互才能播放:', error);
-                    // 添加一次性点击事���来启动播放
+                    // 添加一次性点击事件来启动播放
                     const startAudio = () => {
                         audio.play()
                             .then(() => {
