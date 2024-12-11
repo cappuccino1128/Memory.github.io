@@ -212,8 +212,8 @@ body {
     }
 
     .timeline-thumbnail {
-        width: 120px;
-        height: 120px;
+        width: 100%;
+        height: 400px;
     }
 
     .timeline-item.animate .timeline-content {
@@ -234,7 +234,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.6s ease;
-    height: 400px;
+    height: 600px;
 }
 
 .timeline-thumbnail img {
