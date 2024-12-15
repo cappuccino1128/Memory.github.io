@@ -1,332 +1,120 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const timelineItems = document.querySelectorAll('.timeline-item');
-    const imagePreview = document.getElementById('imagePreview');
-    const previewImage = document.getElementById('previewImage');
-    const closeBtn = document.querySelector('.close-btn');
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const closeBtn = document.getElementsByClassName('close')[0];
+    const photoWall = document.querySelector('.photo-wall');
+    
+    // 动画效果类数组
+    const effectClasses = ['zoom', 'rotate', 'blur', 'scale', 'grayscale', 'sepia'];
+    
+    // 预定义图片数组
+    const images = [
+        // jpg格式图片
+        ...Array.from({length: 100}, (_, i) => `./images/${i + 1}.jpg`),
+        // webp格式图片
+        ...Array.from({length: 100}, (_, i) => `./images/${i + 1}.webp`),
+        // 其他格式图片
+        './images/w.jpg',
+        './images/x.jpg',
+        './images/o1.jpg',
+        './images/o2.jpg'
+    ];
 
-    // 预加载所有图片
-    function preloadImages() {
-        const imagePromises = Array.from(timelineItems).map(item => {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => resolve(img);
-                img.onerror = () => reject(new Error(`Failed to load ${img.src}`));
-                img.src = item.dataset.image;
-            });
-        });
-
-        Promise.all(imagePromises)
-            .then(() => console.log('所有图片预加载完成'))
-            .catch(error => console.warn('部分图片预加载失败:', error));
-    }
-
-    // 初始化
-    preloadImages();
-    initializeTimeline();
-
-    function initializeTimeline() {
-        // 设置时间线项目的动画延迟
-        timelineItems.forEach((item, index) => {
-            // 初始化时添加动画类
-            setTimeout(() => {
-                item.classList.add('animate');
-            }, index * 300); // 300ms的间隔
-        });
-
-        // 为所有预览图片添加点击事件
-        document.querySelectorAll('.preview-trigger').forEach(img => {
-            img.addEventListener('click', handleImageClick);
+    // 检查单个图片是否存在
+    function checkImage(imagePath) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(imagePath);
+            img.onerror = () => reject(imagePath);
+            img.src = imagePath;
         });
     }
 
-    function handleImageClick(e) {
-        e.preventDefault();
-        const timelineItem = this.closest('.timeline-item');
-        const imagePath = this.getAttribute('src');
-        showImage(imagePath);
+    // 创建照片元素
+    function createPhotoItem(imagePath, index) {
+        const photoItem = document.createElement('div');
+        const effectClass = effectClasses[Math.floor(Math.random() * effectClasses.length)];
+        photoItem.className = `photo-item ${effectClass}`;
+        
+        photoItem.style.opacity = '0';
+        photoItem.style.transform = 'translateY(20px)';
+        photoItem.style.transition = 'all 0.5s ease';
+        
+        photoItem.innerHTML = `
+            <img src="${imagePath}" alt="照片${index + 1}">
+            <div class="overlay">
+                <p>点击查看大图</p>
+            </div>
+        `;
+        
+        return photoItem;
     }
 
-    function showImage(imagePath) {
-        // 显示预览容器
-        imagePreview.style.display = 'block';
-        imagePreview.classList.add('loading');
-        
-        // 使用 RAF 确保过渡效果生效
-        requestAnimationFrame(() => {
-            imagePreview.classList.add('show');
-        });
+    // 并行检查所有图片并加载
+    Promise.allSettled(images.map(checkImage))
+        .then(results => {
+            const validImages = results
+                .filter(result => result.status === 'fulfilled')
+                .map(result => result.value);
 
-        // 加载图片
-        const img = new Image();
-        img.onload = () => {
-            previewImage.src = imagePath;
-            imagePreview.classList.remove('loading');
-            
-            // 添加淡入效果
-            requestAnimationFrame(() => {
-                previewImage.style.opacity = '1';
-            });
-        };
-
-        img.onerror = () => {
-            console.error('图片加载失败:', imagePath);
-            imagePreview.classList.remove('loading');
-            alert('图片加载失败，请确保图片存在且路径正确');
-            closeImagePreview();
-        };
-
-        img.src = imagePath;
-        
-        // 添加键盘事件监听
-        document.addEventListener('keydown', handleKeyPress);
-    }
-
-    function handleKeyPress(e) {
-        if (e.key === 'Escape') {
-            closeImagePreview();
-        }
-    }
-
-    function closeImagePreview() {
-        // 移除显示类
-        imagePreview.classList.remove('show');
-        
-        // 等待过渡效果完成后隐藏容器
-        setTimeout(() => {
-            imagePreview.style.display = 'none';
-            imagePreview.classList.remove('loading');
-            previewImage.src = '';
-            document.removeEventListener('keydown', handleKeyPress);
-        }, 300);
-    }
-
-    // 事件监听器设置
-    closeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeImagePreview();
-    });
-
-    imagePreview.addEventListener('click', (e) => {
-        if (e.target === imagePreview) {
-            closeImagePreview();
-        }
-    });
-
-    // 修改滚动处理函数
-    function handleScroll() {
-        const items = Array.from(timelineItems);
-        
-        items.forEach((item, index) => {
-            const rect = item.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            
-            // 调整显示阈值
-            const showThreshold = windowHeight * 0.85;
-            const hideThreshold = windowHeight * 0.1;
-            
-            const elementMiddle = rect.top + (rect.height / 2);
-            const isVisible = elementMiddle < showThreshold && elementMiddle > hideThreshold;
-            
-            if (isVisible) {
-                // 如果上一个元素存在且正在显示，先让它淡出
-                if (index > 0) {
-                    const prevItem = items[index - 1];
-                    if (prevItem.classList.contains('animate')) {
-                        prevItem.classList.add('fade-out');
-                        setTimeout(() => {
-                            prevItem.classList.remove('animate');
-                        }, 800); // 与CSS过渡时间匹配
-                    }
-                }
+            validImages.forEach((imagePath, index) => {
+                const photoItem = createPhotoItem(imagePath, index);
+                photoWall.appendChild(photoItem);
                 
-                // 显示当前元素
-                if (!item.classList.contains('animate')) {
-                    item.classList.remove('fade-out');
-                    item.classList.add('animate');
-                }
-            } else if (elementMiddle > showThreshold) {
-                // 如果元素在视口上方，保持初始状态
-                item.classList.remove('animate', 'fade-out');
-            } else if (elementMiddle < hideThreshold) {
-                // 如果元素在视口下方，确保下一个元素已经显示后再隐藏
-                const nextItem = items[index + 1];
-                if (!nextItem || nextItem.classList.contains('animate')) {
-                    if (item.classList.contains('animate')) {
-                        item.classList.add('fade-out');
-                        setTimeout(() => {
-                            item.classList.remove('animate');
-                        }, 800);
-                    }
-                }
-            }
+                // 使用requestAnimationFrame来优化动画性能
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        photoItem.style.opacity = '1';
+                        photoItem.style.transform = 'translateY(0)';
+                    }, index * 100); // 减少延迟时间
+                });
+            });
         });
-    }
-
-    // 优化防抖函数
-    function debounceScroll(func, wait) {
-        let timeout;
-        return function() {
-            const context = this;
-            const args = arguments;
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                func.apply(context, args);
-            }, wait);
-        };
-    }
-
-    // 使用 RAF 和防抖优化滚动处理
-    const debouncedScroll = debounceScroll(handleScroll, 16); // 约60fps
-    window.addEventListener('scroll', () => {
-        requestAnimationFrame(debouncedScroll);
+    
+    // 图片点击事件
+    photoWall.addEventListener('click', function(e) {
+        const photoItem = e.target.closest('.photo-item');
+        if (photoItem) {
+            const img = photoItem.querySelector('img');
+            modal.style.display = "block";
+            modalImg.src = img.src;
+        }
     });
-
-    // 初始检查和窗口大小改变时的处理
-    handleScroll();
-    window.addEventListener('resize', debouncedScroll);
-
-    // 触摸支持
-    let touchStartX = 0;
-    imagePreview.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
+    
+    // 关闭模态框
+    closeBtn.addEventListener('click', function() {
+        modal.style.display = "none";
     });
-
-    imagePreview.addEventListener('touchend', (e) => {
-        const touchEndX = e.changedTouches[0].clientX;
-        const swipeDistance = touchEndX - touchStartX;
-        
-        if (Math.abs(swipeDistance) > 50) {
-            closeImagePreview();
+    
+    // 点击模态框外部关闭
+    window.addEventListener('click', function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
         }
     });
 
-    // 阻止图片拖动
-    previewImage.addEventListener('dragstart', (e) => e.preventDefault());
-
-    // 添加时间更新功能
-    function updateDateTime() {
-        const now = new Date();
-        const dateTimeString = now.getFullYear() + '年' +
-            String(now.getMonth() + 1).padStart(2, '0') + '月' +
-            String(now.getDate()).padStart(2, '0') + '日 ' +
-            String(now.getHours()).padStart(2, '0') + ':' +
-            String(now.getMinutes()).padStart(2, '0') + ':' +
-            String(now.getSeconds()).padStart(2, '0');
-        
-        document.getElementById('dateTime').textContent = dateTimeString;
-    }
-
-    // 初始更新
-    updateDateTime();
-    // 每秒更新一次
-    setInterval(updateDateTime, 1000);
-
-    // 音乐播放器控制
-    const audio = document.getElementById('bgMusic');
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    const progress = document.querySelector('.progress');
-    const playIcon = playPauseBtn.querySelector('.play-icon');
-
-    // 设置音频属性
-    audio.loop = true;        // 循环播放
-    audio.volume = 0.5;       // 设置音量为50%
-    audio.muted = false;      // 确保不是静音的
-
+    // 添加音乐自动播放功能
+    const audio = document.querySelector('audio');
+    
     // 尝试自动播放
-    function tryAutoplay() {
-        // 创建上下文
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // 解锁音频上下文
-        if (audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
-
-        // 播放音频
+    function playAudio() {
         const playPromise = audio.play();
         
         if (playPromise !== undefined) {
-            playPromise
-                .then(() => {
-                    playIcon.textContent = '⏸';
-                    console.log('自动播放成功');
-                })
-                .catch(error => {
-                    console.log('需要用户交互才能播放:', error);
-                    // 添加一次性点击事件来启动播放
-                    const startAudio = () => {
-                        audio.play()
-                            .then(() => {
-                                playIcon.textContent = '⏸';
-                                document.removeEventListener('click', startAudio);
-                            });
-                    };
-                    document.addEventListener('click', startAudio);
-                });
+            playPromise.catch(error => {
+                // 自动播放失败时（浏览器政策限制），添加点击事件监听
+                document.addEventListener('click', () => {
+                    audio.play();
+                }, { once: true }); // once: true 表示事件只触发一次
+            });
         }
     }
 
-    // 页面加载完成后尝试自动播放
-    tryAutoplay();
+    // 页面加载时尝试播放
+    playAudio();
 
-    // 播放/暂停按钮点击事件
-    playPauseBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (audio.paused) {
-            audio.play().then(() => {
-                playIcon.textContent = '⏸';
-            });
-        } else {
-            audio.pause();
-            playIcon.textContent = '▶';
-        }
-    });
-
-    // 更新进度条
-    audio.addEventListener('timeupdate', function() {
-        if (audio.duration) {
-            const percentage = (audio.currentTime / audio.duration) * 100;
-            progress.style.width = percentage + '%';
-        }
-    });
-
-    // 音频结束事件（如果没有设置循环）
-    audio.addEventListener('ended', function() {
-        if (!audio.loop) {
-            playIcon.textContent = '▶';
-            progress.style.width = '0%';
-        }
-    });
-
-    // 页面可见性变化处理
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            audio.pause();
-            playIcon.textContent = '▶';
-        } else if (!audio.paused) {
-            audio.play();
-            playIcon.textContent = '⏸';
-        }
-    });
-
-    // 处理页面加载状态
-    window.addEventListener('load', function() {
-        tryAutoplay();
-    });
-
-    // 处理用户首次交互
-    const handleFirstInteraction = () => {
-        audio.play().then(() => {
-            playIcon.textContent = '⏸';
-            // 移除所有首次交互的监听器
-            ['click', 'touchstart', 'keydown'].forEach(event => {
-                document.removeEventListener(event, handleFirstInteraction);
-            });
-        });
-    };
-
-    // 添加多个事件监听器来捕获首次交互
-    ['click', 'touchstart', 'keydown'].forEach(event => {
-        document.addEventListener(event, handleFirstInteraction);
+    // 当音频结束时重新播放
+    audio.addEventListener('ended', () => {
+        playAudio();
     });
 }); 
